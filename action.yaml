@@ -1,0 +1,41 @@
+name: Python Virtual Environment
+
+description: Creates a python virtual environment and runs a specified command in it
+
+inputs:
+  python-version:
+    description: Python version to use on the environment
+    required: true
+    default: 3.11.3
+  
+  requirements:
+    description: File containing requirements to be installed, see PyPI documentation for more info
+    required: true
+  
+  constraints:
+    description: File containing constraints on the packages to be installed, see PyPI documentation for more info
+    required: true
+
+  command:
+    description: Command to be executed in the virtual environment
+    required: true
+
+runs:
+  using: composite
+  
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install Dependencies
+      # Not sure if the upgrade pip is necessary, but it was done here: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+      run: |
+        python -m pip install --upgrade pip 
+        pip install -r ${{ inputs.requirements }} -c ${{ inputs.constraints }}
+      shell: bash
+
+    - name: Run command
+      run: ${{ inputs.command }}
+      shell: bash
