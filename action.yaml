@@ -24,10 +24,8 @@ runs:
   using: composite
   
   steps:
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ inputs.python-version }}
+    - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
+      shell: bash
 
     - name: Find requirements
       run: |
@@ -36,8 +34,15 @@ runs:
           echo "REQUIREMENTS_FILE=${{ inputs.requirements }}" >> $GITHUB_ENV
         else
           echo "${{ inputs.requirements }} does not exist."
+          echo "REQUIREMENTS_FILE=${{ runner.temp }}/requirements_$RANDOM.txt" >> $GITHUB_ENV
+          file_from_string.sh "$REQUIREMENTS_FILE" "${{ inputs.requirements }}"
         fi
       shell: bash
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
 
     - name: Install Dependencies
       # Not sure if the upgrade pip is necessary, but it was done here: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
