@@ -29,11 +29,21 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
 
+    - name: Find requirements
+      run: |
+        if [[ -f "${{ inputs.requirements }}" ]]; then
+          echo "${{ inputs.requirements }} file exists."
+          echo "REQUIREMENTS_FILE=${{ inputs.requirements }}" >> $GITHUB_ENV
+        else
+          echo "${{ inputs.requirements }} does not exist."
+        fi
+      shell: bash
+
     - name: Install Dependencies
       # Not sure if the upgrade pip is necessary, but it was done here: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
       run: |
         python -m pip install --upgrade pip 
-        pip install -r ${{ inputs.requirements }} -c ${{ inputs.constraints }}
+        pip install -r $REQUIREMENTS_FILE -c ${{ inputs.constraints }}
       shell: bash
 
     - name: Run command
