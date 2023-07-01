@@ -30,11 +30,14 @@ runs:
     - name: Find requirements
       run: |
         if [[ -f "${{ inputs.requirements }}" ]]; then
-          echo "${{ inputs.requirements }} file exists."
+          echo "File ${{ inputs.requirements }} exists"
           echo "REQUIREMENTS_FILE=${{ inputs.requirements }}" >> $GITHUB_ENV
         else
-          echo "${{ inputs.requirements }} does not exist."
-          echo "REQUIREMENTS_FILE=${{ runner.temp }}/requirements_$RANDOM.txt" >> $GITHUB_ENV
+          echo "Requirements file does not exist"
+
+          REQUIREMENTS_FILE="${{ runner.temp }}/requirements_$RANDOM.txt"
+          echo "REQUIREMENTS_FILE=${REQUIREMENTS_FILE}" >> $GITHUB_ENV
+
           file_from_string.sh "$REQUIREMENTS_FILE" "${{ inputs.requirements }}"
         fi
       shell: bash
